@@ -1,0 +1,79 @@
+syntax ="proto3";
+
+package bookstore;
+option go_package="bookstore/pb";
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+service Bookstore {
+    //返回书店中所有书架的列表
+    rpc ListShelves(google.protobuf.Empty) returns (ListShelvesResponse) {
+        option (google.api.http) = {
+            get: "/v1/shelves"
+        };
+    }
+    
+    //在书店中创建一个新的书架
+    rpc CreateShelf(CreateShelfRequest) returns (Shelf) {
+        option (google.api.http) = {
+            post: "/v1/shelves"
+            body: "shelf"
+        };
+    }
+
+    //返回一个指定的书架
+    rpc GetShelf(GetShelfRequest) returns (Shelf) {
+        option (google.api.http) = {
+            get: "/v1/shelves/{shelf}"
+        };
+    }
+
+    //删除书架，包括书架上存储所有的书本
+    rpc DeleteShelf(DeleteShelfRequest) returns (google.protobuf.Empty) {
+        option (google.api.http) = {
+            delete: "/v1/shelves/{shelf}"
+        };
+    }
+    //返回书架上的图书列表
+    rpc ListBooks(ListBooksRequest)returns(ListBooksReponse){
+        option (google.api.http) = {
+            get: "/v1/shelves/{shelf}/books"
+        };
+    }
+}
+
+message Shelf {
+    int64 id = 1;
+    string theme = 2;
+    int64 size = 3;
+}
+
+message Book {
+    int64 id=1;
+    string author=2;
+}
+message ListShelvesResponse {
+    repeated Shelf shelves = 1;
+}
+message CreateShelfRequest {
+    Shelf shelf = 1;
+}
+
+message GetShelfRequest {
+    int64 shelf = 1;
+}
+
+message DeleteShelfRequest {
+    int64 shelf = 1;
+}
+
+
+message ListBooksRequest {
+    int64 shelf = 1;
+    string page_token=2;
+}
+message ListBooksReponse{
+    repeated Book book =1;
+    string next_page_token=2;
+}
